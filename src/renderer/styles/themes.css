@@ -1,0 +1,205 @@
+/* ─── CSS Custom Properties per Theme ───────────────────────────────────── */
+
+:root,
+[data-theme="dark"] {
+  --bg-base:        #1e1e1e;
+  --bg-surface:     #252526;
+  --bg-elevated:    #2d2d30;
+  --bg-hover:       #37373d;
+  --bg-active:      #094771;
+  --bg-selection:   #264f78;
+
+  --text-primary:   #d4d4d4;
+  --text-secondary: #9d9d9d;
+  --text-muted:     #6b6b6b;
+  --text-accent:    #4fc1ff;
+
+  --border-color:   #3e3e42;
+  --border-focus:   #007acc;
+
+  --tab-bg:         #2d2d30;
+  --tab-active-bg:  #1e1e1e;
+  --tab-active-border: #007acc;
+  --tab-unsaved:    #e8c46a;
+
+  --toolbar-bg:     #3c3c3c;
+  --statusbar-bg:   #007acc;
+  --statusbar-text: #ffffff;
+
+  --scrollbar-thumb: #424242;
+  --scrollbar-track: #1e1e1e;
+
+  --modal-bg:       #252526;
+  --modal-overlay:  rgba(0,0,0,0.6);
+
+  --toast-success-bg: #1e4620;
+  --toast-success-border: #2ea043;
+  --toast-warning-bg: #3d2b00;
+  --toast-warning-border: #d29922;
+  --toast-error-bg:   #3d1a1a;
+  --toast-error-border: #f85149;
+  --toast-info-bg:    #0a2d4a;
+  --toast-info-border: #388bfd;
+
+  --preview-bg:     #1e1e1e;
+  --preview-text:   #d4d4d4;
+  --preview-code-bg: #2d2d30;
+  --preview-border: #3e3e42;
+  --preview-link:   #4fc1ff;
+  --preview-blockquote-border: #4d4d4d;
+  --preview-blockquote-bg: #252526;
+  --preview-table-header: #2d2d30;
+  --preview-table-border: #3e3e42;
+  --preview-table-stripe: #252526;
+
+  --editor-bg:      #1e1e1e;
+  --editor-text:    #d4d4d4;
+  --editor-gutter:  #252526;
+  --editor-line-active: #2a2d2e;
+  --editor-cursor:  #aeafad;
+
+  --cm-keyword:     #c678dd;
+  --cm-string:      #98c379;
+  --cm-comment:     #5c6370;
+  --cm-number:      #d19a66;
+  --cm-operator:    #56b6c2;
+  --cm-tag:         #e06c75;
+  --cm-attribute:   #d19a66;
+  --cm-link:        #61afef;
+  --cm-header:      #e5c07b;
+  --cm-hr:          #5c6370;
+
+  --search-highlight: rgba(255,200,0,0.3);
+  --search-current:   rgba(255,160,0,0.5);
+
+  --resizer-bg:     #3e3e42;
+  --resizer-hover:  #007acc;
+}
+
+[data-theme="light"] {
+  --bg-base:        #ffffff;
+  --bg-surface:     #f3f3f3;
+  --bg-elevated:    #e8e8e8;
+  --bg-hover:       #e0e0e0;
+  --bg-active:      #d0e4f5;
+  --bg-selection:   #add8e6;
+
+  --text-primary:   #1f1f1f;
+  --text-secondary: #555555;
+  --text-muted:     #999999;
+  --text-accent:    #0066cc;
+
+  --border-color:   #d0d0d0;
+  --border-focus:   #0078d4;
+
+  --tab-bg:         #ececec;
+  --tab-active-bg:  #ffffff;
+  --tab-active-border: #0078d4;
+  --tab-unsaved:    #b8860b;
+
+  --toolbar-bg:     #f0f0f0;
+  --statusbar-bg:   #0078d4;
+  --statusbar-text: #ffffff;
+
+  --scrollbar-thumb: #c1c1c1;
+  --scrollbar-track: #f1f1f1;
+
+  --modal-bg:       #ffffff;
+  --modal-overlay:  rgba(0,0,0,0.3);
+
+  --toast-success-bg: #d4edda;
+  --toast-success-border: #28a745;
+  --toast-warning-bg: #fff3cd;
+  --toast-warning-border: #ffc107;
+  --toast-error-bg:   #f8d7da;
+  --toast-error-border: #dc3545;
+  --toast-info-bg:    #d1ecf1;
+  --toast-info-border: #17a2b8;
+
+  --preview-bg:     #ffffff;
+  --preview-text:   #1f1f1f;
+  --preview-code-bg: #f6f8fa;
+  --preview-border: #d0d7de;
+  --preview-link:   #0969da;
+  --preview-blockquote-border: #d0d7de;
+  --preview-blockquote-bg: #f6f8fa;
+  --preview-table-header: #f0f0f0;
+  --preview-table-border: #d0d7de;
+  --preview-table-stripe: #f6f8fa;
+
+  --editor-bg:      #ffffff;
+  --editor-text:    #1f1f1f;
+  --editor-gutter:  #f3f3f3;
+  --editor-line-active: #f0f7ff;
+  --editor-cursor:  #1f1f1f;
+
+  --search-highlight: rgba(255,215,0,0.4);
+  --search-current:   rgba(255,140,0,0.5);
+
+  --resizer-bg:     #d0d0d0;
+  --resizer-hover:  #0078d4;
+}
+
+[data-theme="sepia"] {
+  --bg-base:        #f4ede4;
+  --bg-surface:     #ede3d5;
+  --bg-elevated:    #e5d8c4;
+  --bg-hover:       #ddd0b8;
+  --bg-active:      #c9b89a;
+  --bg-selection:   #d4c4a8;
+
+  --text-primary:   #3b2f1e;
+  --text-secondary: #6b5740;
+  --text-muted:     #9b8870;
+  --text-accent:    #7b4e1e;
+
+  --border-color:   #c8b89a;
+  --border-focus:   #8b6940;
+
+  --tab-bg:         #e5d8c4;
+  --tab-active-bg:  #f4ede4;
+  --tab-active-border: #8b6940;
+  --tab-unsaved:    #b07020;
+
+  --toolbar-bg:     #ede3d5;
+  --statusbar-bg:   #8b6940;
+  --statusbar-text: #f4ede4;
+
+  --scrollbar-thumb: #c8b89a;
+  --scrollbar-track: #f4ede4;
+
+  --modal-bg:       #f4ede4;
+  --modal-overlay:  rgba(0,0,0,0.4);
+
+  --toast-success-bg: #d4edda;
+  --toast-success-border: #28a745;
+  --toast-warning-bg: #fff3cd;
+  --toast-warning-border: #ffc107;
+  --toast-error-bg:   #f8d7da;
+  --toast-error-border: #dc3545;
+  --toast-info-bg:    #d1ecf1;
+  --toast-info-border: #17a2b8;
+
+  --preview-bg:     #f4ede4;
+  --preview-text:   #3b2f1e;
+  --preview-code-bg: #ede3d5;
+  --preview-border: #c8b89a;
+  --preview-link:   #7b4e1e;
+  --preview-blockquote-border: #c8b89a;
+  --preview-blockquote-bg: #ede3d5;
+  --preview-table-header: #e5d8c4;
+  --preview-table-border: #c8b89a;
+  --preview-table-stripe: #ede3d5;
+
+  --editor-bg:      #f4ede4;
+  --editor-text:    #3b2f1e;
+  --editor-gutter:  #ede3d5;
+  --editor-line-active: #ede3d5;
+  --editor-cursor:  #3b2f1e;
+
+  --search-highlight: rgba(200,160,0,0.3);
+  --search-current:   rgba(180,120,0,0.5);
+
+  --resizer-bg:     #c8b89a;
+  --resizer-hover:  #8b6940;
+}

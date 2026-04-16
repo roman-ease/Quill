@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval' data: blob:; img-src 'self' data: blob: https:; script-src 'self' 'unsafe-inline' 'unsafe-eval';">
+  <title>MarkdownViewer</title>
+
+  <!-- CodeMirror 5 -->
+  <link rel="stylesheet" href="../../node_modules/codemirror/lib/codemirror.css">
+  <link rel="stylesheet" href="../../node_modules/codemirror/addon/dialog/dialog.css">
+  <link rel="stylesheet" href="../../node_modules/codemirror/addon/search/matchesonscrollbar.css">
+
+  <!-- Highlight.js テーマ (動的切替のためJSから制御) -->
+  <link id="hljs-theme" rel="stylesheet" href="../../node_modules/highlight.js/styles/github-dark.css">
+
+  <!-- アプリスタイル -->
+  <link rel="stylesheet" href="styles/themes.css">
+  <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/preview.css">
+</head>
+<body>
+
+  <!-- ツールバー -->
+  <div id="toolbar" class="toolbar">
+    <div class="toolbar-left">
+      <button class="tb-btn" data-action="new-file" title="新規 (Ctrl+N)">
+        <svg viewBox="0 0 16 16"><path d="M9 1H4a1 1 0 00-1 1v12a1 1 0 001 1h8a1 1 0 001-1V6l-4-5zm-1 1l3 4H8V2z"/></svg>
+      </button>
+      <button class="tb-btn" data-action="open-file" title="開く (Ctrl+O)">
+        <svg viewBox="0 0 16 16"><path d="M1 3.5A1.5 1.5 0 012.5 2h2.764c.958 0 1.76.56 2.094 1.37l.195.49A.5.5 0 008 4h5.5A1.5 1.5 0 0115 5.5v7a1.5 1.5 0 01-1.5 1.5h-11A1.5 1.5 0 011 12.5v-9z"/></svg>
+      </button>
+      <button class="tb-btn" data-action="save" title="保存 (Ctrl+S)">
+        <svg viewBox="0 0 16 16"><path d="M2 1a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1V4.414a1 1 0 00-.293-.707L11.293 1.3A1 1 0 0010.586 1H2zm3.5 11a1.5 1.5 0 110-3 1.5 1.5 0 010 3zM10 2v3H5V2h5z"/></svg>
+      </button>
+      <div class="tb-separator"></div>
+
+      <!-- 書式 -->
+      <button class="tb-btn" data-action="bold" title="太字 (Ctrl+B)"><b>B</b></button>
+      <button class="tb-btn" data-action="italic" title="斜体 (Ctrl+I)"><i>I</i></button>
+      <button class="tb-btn" data-action="strikethrough" title="打ち消し">~~</button>
+      <button class="tb-btn" data-action="inline-code" title="インラインコード">`</button>
+      <button class="tb-btn" data-action="code-block" title="コードブロック">```</button>
+      <button class="tb-btn" data-action="link" title="リンク (Ctrl+K)">🔗</button>
+      <button class="tb-btn" data-action="image" title="画像">🖼</button>
+      <button class="tb-btn" data-action="blockquote" title="引用">&gt;</button>
+      <button class="tb-btn" data-action="hr" title="水平線">—</button>
+      <div class="tb-separator"></div>
+
+      <!-- 挿入 -->
+      <button class="tb-btn" data-action="insert-table" title="テーブル挿入 (Ctrl+Shift+T)">⊞</button>
+      <button class="tb-btn" data-action="insert-toc" title="目次生成 (Ctrl+Shift+C)">≡</button>
+      <button class="tb-btn" data-action="insert-mermaid" title="Mermaid テンプレート">◈</button>
+      <div class="tb-separator"></div>
+
+      <!-- 検索 -->
+      <button class="tb-btn" data-action="find" title="検索 (Ctrl+F)">🔍</button>
+    </div>
+
+    <div class="toolbar-right">
+      <!-- 最近使ったファイル -->
+      <button class="tb-btn" id="recent-btn" title="最近使ったファイル">
+        <svg viewBox="0 0 16 16"><path d="M8 3.5a.5.5 0 00-1 0V9a.5.5 0 00.252.434l3.5 2a.5.5 0 00.496-.868L8 8.71V3.5z"/><path d="M8 16A8 8 0 108 0a8 8 0 000 16zm7-8A7 7 0 111 8a7 7 0 0114 0z"/></svg>
+      </button>
+      <div id="recent-menu" class="dropdown-menu hidden"></div>
+
+      <div class="tb-separator"></div>
+
+      <!-- ビューモード -->
+      <button class="tb-btn active" id="view-split-btn" data-action="view-split" title="分割ビュー">⬜⬜</button>
+      <button class="tb-btn" id="view-preview-btn" data-action="view-preview" title="プレビューのみ">👁</button>
+      <div class="tb-separator"></div>
+
+      <!-- 同期スクロール -->
+      <button class="tb-btn active" id="sync-scroll-btn" data-action="toggle-sync-scroll" title="同期スクロール">⇅</button>
+
+      <!-- フォーカスモード -->
+      <button class="tb-btn" id="focus-mode-btn" data-action="toggle-focus-mode" title="フォーカスモード (Ctrl+Shift+F)">⛶</button>
+      <div class="tb-separator"></div>
+
+      <!-- テーマ -->
+      <button class="tb-btn" id="theme-btn" title="テーマ切替">◑</button>
+      <div id="theme-menu" class="dropdown-menu hidden">
+        <div class="dropdown-item" data-theme="dark">Dark</div>
+        <div class="dropdown-item" data-theme="light">Light</div>
+        <div class="dropdown-item" data-theme="sepia">Sepia</div>
+      </div>
+
+      <!-- 設定 -->
+      <button class="tb-btn" data-action="settings" title="設定">⚙</button>
+    </div>
+  </div>
+
+  <!-- タブバー -->
+  <div id="tab-bar">
+    <div id="tab-list"></div>
+    <button id="new-tab-btn" title="新規タブ (Ctrl+T)">+</button>
+  </div>
+
+  <!-- ファイル変更通知バー -->
+  <div id="file-change-bar" class="file-change-bar hidden">
+    <span id="file-change-msg"></span>
+    <button id="file-change-reload">再読み込み</button>
+    <button id="file-change-dismiss">✕</button>
+  </div>
+
+  <!-- メインコンテンツ -->
+  <div id="main-content">
+    <!-- エディタペイン -->
+    <div id="editor-pane">
+      <div id="editor-container"></div>
+    </div>
+
+    <!-- リサイザー -->
+    <div id="pane-resizer"></div>
+
+    <!-- プレビューペイン -->
+    <div id="preview-pane">
+      <div id="preview-content"></div>
+    </div>
+  </div>
+
+  <!-- ステータスバー -->
+  <div id="status-bar">
+    <span id="status-filepath" class="status-item" title="ファイルパス">新規ファイル</span>
+    <span class="status-sep">|</span>
+    <span id="status-cursor" class="status-item" title="カーソル位置">1:1</span>
+    <span class="status-sep">|</span>
+    <span id="status-words" class="status-item" title="単語数">0 語</span>
+    <span class="status-sep">|</span>
+    <span id="status-lines" class="status-item" title="総行数">1 行</span>
+    <span class="status-sep">|</span>
+    <span id="status-encoding" class="status-item status-clickable" title="エンコーディング (クリックで変更)">UTF-8</span>
+    <span class="status-sep">|</span>
+    <span id="status-lineending" class="status-item status-clickable" title="改行コード (クリックで変更)">LF</span>
+  </div>
+
+  <!-- 検索・置換パネル -->
+  <div id="search-panel" class="search-panel hidden">
+    <div class="search-row">
+      <input type="text" id="search-input" placeholder="検索..." autocomplete="off" spellcheck="false">
+      <button id="search-prev" title="前へ (Shift+Enter)">▲</button>
+      <button id="search-next" title="次へ (Enter)">▼</button>
+      <label class="search-opt" title="大文字小文字区別">
+        <input type="checkbox" id="search-case"> Aa
+      </label>
+      <label class="search-opt" title="正規表現">
+        <input type="checkbox" id="search-regex"> .*
+      </label>
+      <button id="search-close" title="閉じる (Escape)">✕</button>
+    </div>
+    <div id="replace-row" class="search-row hidden">
+      <input type="text" id="replace-input" placeholder="置換後..." autocomplete="off" spellcheck="false">
+      <button id="replace-one">1件置換</button>
+      <button id="replace-all">全件置換</button>
+    </div>
+  </div>
+
+  <!-- テーブル挿入ダイアログ -->
+  <div id="table-dialog" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>テーブルを挿入</h3>
+      <div class="modal-row">
+        <label>列数: <input type="number" id="table-cols" value="3" min="1" max="20"></label>
+        <label>行数: <input type="number" id="table-rows" value="3" min="1" max="50"></label>
+      </div>
+      <div class="modal-actions">
+        <button id="table-insert-btn" class="btn-primary">挿入</button>
+        <button id="table-cancel-btn">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 設定ダイアログ -->
+  <div id="settings-dialog" class="modal-overlay hidden">
+    <div class="modal modal-large">
+      <div class="modal-header">
+        <h3>設定</h3>
+        <button id="settings-close-btn">✕</button>
+      </div>
+      <div class="settings-body">
+        <div class="settings-sidebar">
+          <div class="settings-tab active" data-pane="appearance">外観</div>
+          <div class="settings-tab" data-pane="editor">エディタ</div>
+          <div class="settings-tab" data-pane="file">ファイル</div>
+          <div class="settings-tab" data-pane="preview">プレビュー</div>
+          <div class="settings-tab" data-pane="window">ウィンドウ</div>
+        </div>
+        <div class="settings-content">
+
+          <!-- 外観 -->
+          <div class="settings-pane active" id="pane-appearance">
+            <div class="settings-group">
+              <label>テーマ
+                <select id="s-theme">
+                  <option value="dark">Dark</option>
+                  <option value="light">Light</option>
+                  <option value="sepia">Sepia</option>
+                </select>
+              </label>
+              <label>エディタフォントサイズ (px)
+                <input type="number" id="s-editor-font-size" min="8" max="32">
+              </label>
+              <label>プレビューフォントサイズ (px)
+                <input type="number" id="s-preview-font-size" min="8" max="32">
+              </label>
+              <label>エディタフォント
+                <input type="text" id="s-editor-font">
+              </label>
+              <label>エディタ行高
+                <input type="number" id="s-editor-line-height" min="1" max="3" step="0.1">
+              </label>
+            </div>
+          </div>
+
+          <!-- エディタ -->
+          <div class="settings-pane" id="pane-editor">
+            <div class="settings-group">
+              <label class="toggle-label">
+                <span>ワードラップ</span>
+                <input type="checkbox" id="s-word-wrap">
+              </label>
+              <label>タブサイズ
+                <select id="s-tab-size">
+                  <option value="2">2</option>
+                  <option value="4">4</option>
+                </select>
+              </label>
+              <label class="toggle-label">
+                <span>スペルチェック</span>
+                <input type="checkbox" id="s-spell-check">
+              </label>
+              <label class="toggle-label">
+                <span>同期スクロール</span>
+                <input type="checkbox" id="s-sync-scroll">
+              </label>
+              <label class="toggle-label">
+                <span>自動保存</span>
+                <input type="checkbox" id="s-auto-save">
+              </label>
+              <label>自動保存間隔 (秒)
+                <input type="number" id="s-auto-save-interval" min="5" max="300">
+              </label>
+            </div>
+          </div>
+
+          <!-- ファイル -->
+          <div class="settings-pane" id="pane-file">
+            <div class="settings-group">
+              <label>画像保存先
+                <select id="s-image-save-mode">
+                  <option value="relative">MD ファイルと同じフォルダの images/</option>
+                  <option value="fixed">固定フォルダ</option>
+                </select>
+              </label>
+              <label>固定フォルダパス
+                <input type="text" id="s-image-save-folder">
+              </label>
+              <label>エンコーディング
+                <select id="s-encoding">
+                  <option value="utf8">UTF-8</option>
+                  <option value="utf8bom">UTF-8 BOM</option>
+                  <option value="utf16le">UTF-16 LE</option>
+                </select>
+              </label>
+              <label>改行コード
+                <select id="s-line-ending">
+                  <option value="lf">LF</option>
+                  <option value="crlf">CRLF</option>
+                </select>
+              </label>
+              <label class="toggle-label">
+                <span>セッション復元</span>
+                <input type="checkbox" id="s-restore-session">
+              </label>
+            </div>
+          </div>
+
+          <!-- プレビュー -->
+          <div class="settings-pane" id="pane-preview">
+            <div class="settings-group">
+              <label>シンタックスハイライトテーマ
+                <select id="s-syntax-theme">
+                  <option value="github-dark">GitHub Dark</option>
+                  <option value="github">GitHub Light</option>
+                  <option value="atom-one-dark">Atom One Dark</option>
+                  <option value="vs2015">VS 2015</option>
+                  <option value="monokai">Monokai</option>
+                </select>
+              </label>
+              <label>Mermaid テーマ
+                <select id="s-mermaid-theme">
+                  <option value="dark">Dark</option>
+                  <option value="default">Default</option>
+                  <option value="neutral">Neutral</option>
+                  <option value="forest">Forest</option>
+                </select>
+              </label>
+              <label class="toggle-label">
+                <span>KaTeX 数式レンダリング</span>
+                <input type="checkbox" id="s-katex-enabled">
+              </label>
+              <label class="toggle-label">
+                <span>リンクをブラウザで開く</span>
+                <input type="checkbox" id="s-open-links-browser">
+              </label>
+            </div>
+          </div>
+
+          <!-- ウィンドウ -->
+          <div class="settings-pane" id="pane-window">
+            <div class="settings-group">
+              <label class="toggle-label">
+                <span>ウィンドウサイズを記憶</span>
+                <input type="checkbox" id="s-remember-window-size">
+              </label>
+              <label class="toggle-label">
+                <span>常に手前に表示</span>
+                <input type="checkbox" id="s-always-on-top">
+              </label>
+              <label>ズーム倍率
+                <input type="number" id="s-zoom-factor" min="0.3" max="3.0" step="0.1">
+              </label>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button id="settings-save-btn" class="btn-primary">保存</button>
+        <button id="settings-cancel-btn">キャンセル</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ライトボックス -->
+  <div id="lightbox" class="lightbox hidden">
+    <div id="lightbox-backdrop"></div>
+    <img id="lightbox-img" src="" alt="">
+    <button id="lightbox-close">✕</button>
+  </div>
+
+  <!-- トースト通知コンテナ -->
+  <div id="toast-container"></div>
+
+  <!-- バージョン情報ダイアログ -->
+  <div id="about-dialog" class="modal-overlay hidden">
+    <div class="modal">
+      <h3>MarkdownViewer について</h3>
+      <p id="about-version"></p>
+      <p>軽量 Markdown エディタ &amp; ビューア for Windows</p>
+      <div class="modal-actions">
+        <button id="about-close-btn" class="btn-primary">閉じる</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Scripts ─── -->
+  <script src="../../node_modules/codemirror/lib/codemirror.js"></script>
+  <script src="../../node_modules/codemirror/mode/markdown/markdown.js"></script>
+  <script src="../../node_modules/codemirror/mode/javascript/javascript.js"></script>
+  <script src="../../node_modules/codemirror/mode/xml/xml.js"></script>
+  <script src="../../node_modules/codemirror/mode/css/css.js"></script>
+  <script src="../../node_modules/codemirror/mode/python/python.js"></script>
+  <script src="../../node_modules/codemirror/mode/shell/shell.js"></script>
+  <script src="../../node_modules/codemirror/mode/sql/sql.js"></script>
+  <script src="../../node_modules/codemirror/mode/yaml/yaml.js"></script>
+  <script src="../../node_modules/codemirror/mode/rust/rust.js"></script>
+  <script src="../../node_modules/codemirror/mode/go/go.js"></script>
+  <script src="../../node_modules/codemirror/mode/clike/clike.js"></script>
+  <script src="../../node_modules/codemirror/addon/edit/continuelist.js"></script>
+  <script src="../../node_modules/codemirror/addon/search/searchcursor.js"></script>
+  <script src="../../node_modules/codemirror/addon/search/search.js"></script>
+  <script src="../../node_modules/codemirror/addon/search/matchesonscrollbar.js"></script>
+  <script src="../../node_modules/codemirror/addon/scroll/annotatescrollbar.js"></script>
+  <script src="../../node_modules/codemirror/addon/selection/active-line.js"></script>
+  <script src="../../node_modules/codemirror/addon/display/placeholder.js"></script>
+
+  <!-- アプリ JS モジュール -->
+  <script src="js/notifications.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/preview.js"></script>
+  <script src="js/editor.js"></script>
+  <script src="js/tabs.js"></script>
+  <script src="js/search.js"></script>
+  <script src="js/toolbar.js"></script>
+  <script src="js/statusbar.js"></script>
+  <script src="js/export.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

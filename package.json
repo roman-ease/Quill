@@ -1,0 +1,78 @@
+{
+  "name": "markdown-viewer-pro",
+  "productName": "MarkdownViewer",
+  "version": "1.0.0",
+  "description": "A lightweight Markdown editor and viewer for Windows",
+  "main": "src/main/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win",
+    "build:dir": "electron-builder --win --dir"
+  },
+  "keywords": [
+    "markdown",
+    "editor",
+    "viewer",
+    "electron"
+  ],
+  "author": "MarkdownViewer",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.13.3"
+  },
+  "dependencies": {
+    "codemirror": "^5.65.17",
+    "dompurify": "^3.1.5",
+    "highlight.js": "^11.9.0",
+    "katex": "^0.16.45",
+    "marked": "^12.0.0",
+    "marked-gfm-heading-id": "^3.1.0",
+    "mermaid": "^11.14.0"
+  },
+  "build": {
+    "appId": "com.markdownviewer.app",
+    "productName": "MarkdownViewer",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "src/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "assets/icon.ico",
+      "fileAssociations": [
+        {
+          "ext": "md",
+          "name": "Markdown Document",
+          "description": "Markdown Document",
+          "role": "Editor"
+        },
+        {
+          "ext": "markdown",
+          "name": "Markdown Document",
+          "description": "Markdown Document",
+          "role": "Editor"
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "MarkdownViewer"
+    }
+  }
+}
