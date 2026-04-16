@@ -96,6 +96,7 @@ body {
   position: relative;
 }
 .tb-btn:hover { background: var(--bg-hover); color: var(--text-primary); }
+.tb-btn:focus { outline: 1px solid var(--border-focus); outline-offset: -1px; }
 .tb-btn.active { background: var(--bg-active); color: var(--text-accent); }
 .tb-btn svg { width: 15px; height: 15px; }
 
@@ -388,7 +389,7 @@ body.view-preview #preview-pane { border-left: none; }
 
 /* ─── Search Panel ───────────────────────────────────────────────────────── */
 .search-panel {
-  position: absolute;
+  position: fixed;
   top: 76px;
   right: 16px;
   background: var(--bg-elevated);

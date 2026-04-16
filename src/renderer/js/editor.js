@@ -262,26 +262,6 @@ const Editor = (() => {
     }
   }
 
-  // 自動ペア補完: *, _, `, ~, [ で選択テキストを囲む
-  function setupAutoPair(cm) {
-    cm.on('keypress', (editor, event) => {
-      const pairMap = {
-        '*': ['*', '*'],
-        '_': ['_', '_'],
-        '`': ['`', '`'],
-        '~': ['~', '~'],
-        '[': ['[', ']'],
-      };
-      const pair = pairMap[event.key];
-      if (!pair) return;
-      const sel = editor.getSelection();
-      if (sel) {
-        event.preventDefault();
-        editor.replaceSelection(`${pair[0]}${sel}${pair[1]}`);
-      }
-    });
-  }
-
   // RFC 4180 準拠の TSV パーサー
   // ダブルクォートで囲まれたフィールドは改行・タブ・引用符を含められる
   function _parseTsv(text) {
@@ -453,7 +433,6 @@ const Editor = (() => {
     insertTOC,
     insertMermaidTemplate,
     toggleTaskItem,
-    setupAutoPair,
     handleImagePaste,
     applySettings,
     focus,

@@ -58,20 +58,6 @@ const App = (() => {
     // 自動保存
     _resetAutoSave();
 
-    // エディタスクロールイベントをエミット (同期スクロール用)
-    window.addEventListener('tab-activated', () => {
-      const cm = Editor.getActiveInstance();
-      if (cm) {
-        cm.on('scroll', () => {
-          const info = cm.getScrollInfo();
-          const ratio = info.height > info.clientHeight
-            ? info.top / (info.height - info.clientHeight)
-            : 0;
-          window.dispatchEvent(new CustomEvent('editor-scroll', { detail: { ratio } }));
-        });
-      }
-    });
-
     console.log('MarkdownViewer initialized');
   }
 
@@ -400,18 +386,29 @@ const App = (() => {
   // ─── CodeMirror スクロール同期 ───────────────────────────────────────────
 
   function _initEditorScrollSync() {
-    // tab-activated 時に cm.on('scroll') を再バインド
+    let _scrollHandler = null;
+    let _lastCm = null;
+
     window.addEventListener('tab-activated', () => {
       const cm = Editor.getActiveInstance();
       if (!cm) return;
-      // 既存リスナーはCM側が管理するので問題なし
-      cm.on('scroll', () => {
+
+      // 前のインスタンスのハンドラを解除してから再バインド
+      // (解除しないとタブ切替のたびにハンドラが蓄積しメモリリーク・多重発火が起きる)
+      if (_lastCm && _scrollHandler) {
+        _lastCm.off('scroll', _scrollHandler);
+      }
+
+      _scrollHandler = () => {
         const info = cm.getScrollInfo();
         const ratio = info.height > info.clientHeight
           ? info.top / (info.height - info.clientHeight)
           : 0;
         window.dispatchEvent(new CustomEvent('editor-scroll', { detail: { ratio } }));
-      });
+      };
+
+      cm.on('scroll', _scrollHandler);
+      _lastCm = cm;
     });
   }
 

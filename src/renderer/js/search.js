@@ -36,6 +36,21 @@ const Search = (() => {
     Editor.focus();
   }
 
+  // ─── クエリ構築 (regex再コンパイルを一箇所に集約) ────────────────────────
+  function _buildQuery(extraFlags = '') {
+    if (!_query) return null;
+    const caseSensitive = document.getElementById('search-case').checked;
+    const useRegex = document.getElementById('search-regex').checked;
+    const flags = (caseSensitive ? '' : 'i') + extraFlags;
+    try {
+      return useRegex
+        ? new RegExp(_query, flags)
+        : new RegExp(_escapeRegex(_query), flags);
+    } catch {
+      return null;
+    }
+  }
+
   // ─── 検索実行 ────────────────────────────────────────────────────────────
   function _doSearch() {
     _clearHighlights();
@@ -45,19 +60,8 @@ const Search = (() => {
     const cm = Editor.getActiveInstance();
     if (!cm) return;
 
-    const caseSensitive = document.getElementById('search-case').checked;
-    const useRegex = document.getElementById('search-regex').checked;
-
-    let query;
-    try {
-      if (useRegex) {
-        query = new RegExp(_query, caseSensitive ? '' : 'i');
-      } else {
-        query = caseSensitive ? _query : new RegExp(_escapeRegex(_query), 'i');
-      }
-    } catch {
-      return;
-    }
+    const query = _buildQuery();
+    if (!query) return;
 
     // SearchCursor でハイライト
     _cursor = cm.getSearchCursor(query);
@@ -81,15 +85,8 @@ const Search = (() => {
     const cm = Editor.getActiveInstance();
     if (!cm || !_query) return;
 
-    const caseSensitive = document.getElementById('search-case').checked;
-    const useRegex = document.getElementById('search-regex').checked;
-
-    let query;
-    try {
-      query = useRegex
-        ? new RegExp(_query, caseSensitive ? '' : 'i')
-        : (caseSensitive ? _query : new RegExp(_escapeRegex(_query), 'i'));
-    } catch { return; }
+    const query = _buildQuery();
+    if (!query) return;
 
     if (!_cursor) _cursor = cm.getSearchCursor(query, cm.getCursor());
 
@@ -107,15 +104,8 @@ const Search = (() => {
     const cm = Editor.getActiveInstance();
     if (!cm || !_query) return;
 
-    const caseSensitive = document.getElementById('search-case').checked;
-    const useRegex = document.getElementById('search-regex').checked;
-
-    let query;
-    try {
-      query = useRegex
-        ? new RegExp(_query, caseSensitive ? '' : 'i')
-        : (caseSensitive ? _query : new RegExp(_escapeRegex(_query), 'i'));
-    } catch { return; }
+    const query = _buildQuery();
+    if (!query) return;
 
     if (!_cursor) _cursor = cm.getSearchCursor(query, cm.getCursor());
 
@@ -145,15 +135,9 @@ const Search = (() => {
     const cm = Editor.getActiveInstance();
     if (!cm || !_query) return;
     const replaceText = replaceInput().value;
-    const caseSensitive = document.getElementById('search-case').checked;
-    const useRegex = document.getElementById('search-regex').checked;
 
-    let query;
-    try {
-      query = useRegex
-        ? new RegExp(_query, caseSensitive ? 'g' : 'gi')
-        : new RegExp(_escapeRegex(_query), caseSensitive ? 'g' : 'gi');
-    } catch { return; }
+    const query = _buildQuery('g');
+    if (!query) return;
 
     const content = cm.getValue();
     const newContent = content.replace(query, replaceText);

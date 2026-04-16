@@ -139,7 +139,11 @@ function registerIpcHandlers(mainWindow, sessionManager, fileWatcher) {
 
   // ─── 最近使ったファイル ─────────────────────────────────────────
   ipcMain.handle('add-recent-file', async (event, filePath) => {
-    sessionManager.addRecentFile(filePath);
+    if (filePath === '__clear__') {
+      sessionManager.clearRecentFiles();
+    } else {
+      sessionManager.addRecentFile(filePath);
+    }
     return { success: true };
   });
 
