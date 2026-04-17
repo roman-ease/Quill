@@ -68,36 +68,39 @@ const ExportManager = (() => {
     if (!tab) { Notifications.show('タブが選択されていません', 'warning'); return; }
 
     const previewBody = Preview.getPreviewHTML();
-    const theme = Settings.get('theme');
-    const root = document.documentElement;
-    const cs = getComputedStyle(root);
-    const cssVars = [
-      '--bg-base', '--text-primary', '--preview-bg', '--preview-text', '--preview-code-bg',
-      '--preview-border', '--preview-link', '--preview-blockquote-border', '--preview-blockquote-bg',
-      '--preview-table-header', '--preview-table-border', '--preview-table-stripe',
-    ].map(v => `${v}: ${cs.getPropertyValue(v).trim()};`).join('\n');
 
+    // PDF は常に白背景なので hljs も明色テーマ固定
     let hljsCss = '';
     try {
-      const hljsThemeEl = document.getElementById('hljs-theme');
-      const res = await fetch(hljsThemeEl.href);
-      hljsCss = await res.text();
+      const fs = require('fs');
+      const path = require('path');
+      const hljsPath = path.join(__dirname, '../../../node_modules/highlight.js/styles/github.min.css');
+      hljsCss = fs.readFileSync(hljsPath, 'utf8');
     } catch { /* ignore */ }
 
     const html = `<!DOCTYPE html>
-<html data-theme="${theme}">
+<html>
 <head>
 <meta charset="UTF-8">
 <style>
-  :root { ${cssVars} }
+  :root {
+    --preview-bg: #ffffff;
+    --preview-text: #1a1a1a;
+    --preview-code-bg: #f5f5f5;
+    --preview-border: #d0d0d0;
+    --preview-link: #1a5fa8;
+    --preview-blockquote-border: #b0b0b0;
+    --preview-blockquote-bg: #f9f9f9;
+    --preview-table-header: #eeeeee;
+    --preview-table-border: #cccccc;
+    --preview-table-stripe: #f5f5f5;
+  }
   ${_getPreviewCssInlined()}
   ${hljsCss}
-  body { background: var(--preview-bg); color: var(--preview-text); margin: 0; padding: 20px 32px; }
+  body { background: #ffffff; color: #1a1a1a; margin: 0; padding: 20px 32px; }
   .preview-body { max-width: 100%; }
-  @media print {
-    pre { page-break-inside: avoid; }
-    h1, h2, h3 { page-break-after: avoid; }
-  }
+  pre { page-break-inside: avoid; }
+  h1, h2, h3 { page-break-after: avoid; }
 </style>
 </head>
 <body>
