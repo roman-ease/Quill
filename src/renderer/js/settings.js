@@ -74,7 +74,7 @@ const Settings = (() => {
       'monokai': 'monokai',
     };
     // auto の場合はアプリテーマに応じて自動選択
-    const autoMap = { dark: 'github-dark', light: 'github', sepia: 'github', vaporwave: 'atom-one-dark', neon: 'vs2015' };
+    const autoMap = { dark: 'atom-one-dark', light: 'github', sepia: 'github', vaporwave: 'atom-one-dark', neon: 'vs2015' };
     const syntaxSetting = _settings.syntaxTheme;
     const resolved = (!syntaxSetting || syntaxSetting === 'auto')
       ? autoMap[theme || 'dark'] || 'github-dark'

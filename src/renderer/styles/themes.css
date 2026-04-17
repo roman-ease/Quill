@@ -2,258 +2,258 @@
 
 :root,
 [data-theme="dark"] {
-  /* Backgrounds — dark blue-charcoal */
-  --bg-base:        #13141a;
-  --bg-surface:     #1a1d27;
-  --bg-elevated:    #22263a;
-  --bg-hover:       #2c3148;
-  --bg-active:      #1a3a5e;
-  --bg-selection:   #1e4272;
+  /* Backgrounds — Sebastian dark: 深夜の書斎、真鍮ランプの灯り */
+  --bg-base:        #071224;
+  --bg-surface:     #0b1628;
+  --bg-elevated:    #101c30;
+  --bg-hover:       #142035;
+  --bg-active:      #1a2940;
+  --bg-selection:   #253558;
 
   /* Text */
-  --text-primary:   #dde2f0;
-  --text-secondary: #8b93a8;
-  --text-muted:     #4e5568;
-  --text-accent:    #60a5fa;
+  --text-primary:   #e6ddc6;
+  --text-secondary: #b8a890;
+  --text-muted:     #8a7d6a;
+  --text-accent:    #c8a96b;
 
   /* Borders */
-  --border-color:   #2a2e42;
-  --border-focus:   #3b82f6;
+  --border-color:   #4a3e2c;
+  --border-focus:   #c8a96b;
 
   /* Tabs */
-  --tab-bg:             #1a1d27;
-  --tab-active-bg:      #13141a;
-  --tab-active-border:  #3b82f6;
-  --tab-unsaved:        #fbbf24;
+  --tab-bg:             #0b1628;
+  --tab-active-bg:      #071224;
+  --tab-active-border:  #c8a96b;
+  --tab-unsaved:        #d4bb88;
 
   /* Chrome */
-  --toolbar-bg:     #1a1d27;
-  --statusbar-bg:   #1d4ed8;
-  --statusbar-text: #e0e7ff;
+  --toolbar-bg:     #0b1628;
+  --statusbar-bg:   #060e1c;
+  --statusbar-text: #d8d0c0;
 
   /* Scrollbar */
-  --scrollbar-thumb: #383c52;
+  --scrollbar-thumb: #253558;
   --scrollbar-track: transparent;
 
   /* Modal */
-  --modal-bg:      #1a1d27;
-  --modal-overlay: rgba(0,0,0,0.65);
+  --modal-bg:      #0b1628;
+  --modal-overlay: rgba(0,0,8,0.75);
 
   /* Toasts */
-  --toast-success-bg:     rgba(20,83,45,0.96);
-  --toast-success-border: #22c55e;
-  --toast-warning-bg:     rgba(78,52,0,0.96);
-  --toast-warning-border: #f59e0b;
-  --toast-error-bg:       rgba(80,20,20,0.96);
-  --toast-error-border:   #f87171;
-  --toast-info-bg:        rgba(14,50,90,0.96);
-  --toast-info-border:    #60a5fa;
+  --toast-success-bg:     rgba(14,40,20,0.96);
+  --toast-success-border: #4e8c5a;
+  --toast-warning-bg:     rgba(45,35,8,0.96);
+  --toast-warning-border: #c8a96b;
+  --toast-error-bg:       rgba(55,15,10,0.96);
+  --toast-error-border:   #b05848;
+  --toast-info-bg:        rgba(8,20,45,0.96);
+  --toast-info-border:    #7aaccc;
 
   /* Preview */
-  --preview-bg:                #13141a;
-  --preview-text:              #dde2f0;
-  --preview-code-bg:           #1a1d27;
-  --preview-border:            #2a2e42;
-  --preview-link:              #60a5fa;
-  --preview-blockquote-border: #3a3f58;
-  --preview-blockquote-bg:     #17192a;
-  --preview-table-header:      #1e2234;
-  --preview-table-border:      #2a2e42;
-  --preview-table-stripe:      #1a1d27;
+  --preview-bg:                #071224;
+  --preview-text:              #e6ddc6;
+  --preview-code-bg:           #0b1628;
+  --preview-border:            #4a3e2c;
+  --preview-link:              #c8a96b;
+  --preview-blockquote-border: #4a3e2c;
+  --preview-blockquote-bg:     #0d1a2e;
+  --preview-table-header:      #101c30;
+  --preview-table-border:      #4a3e2c;
+  --preview-table-stripe:      #0b1628;
 
   /* Editor */
-  --editor-bg:           #13141a;
-  --editor-text:         #dde2f0;
-  --editor-gutter:       #1a1d27;
-  --editor-line-active:  #1d2030;
-  --editor-cursor:       #c8ccdf;
+  --editor-bg:           #071224;
+  --editor-text:         #e6ddc6;
+  --editor-gutter:       #0b1628;
+  --editor-line-active:  #0d1830;
+  --editor-cursor:       #c8a96b;
 
-  /* Syntax — Tokyo Night palette */
-  --cm-keyword:    #bb9af7;
-  --cm-string:     #9ece6a;
-  --cm-comment:    #565f89;
-  --cm-number:     #ff9e64;
-  --cm-operator:   #89ddff;
-  --cm-tag:        #f7768e;
-  --cm-attribute:  #e0af68;
-  --cm-link:       #7aa2f7;
-  --cm-header:     #e0af68;
-  --cm-hr:         #565f89;
+  /* Syntax — 琥珀ゴールド × ダスティブルー */
+  --cm-keyword:    #c8a96b;
+  --cm-string:     #7aaccc;
+  --cm-comment:    #8a7d6a;
+  --cm-number:     #c89050;
+  --cm-operator:   #d4bb88;
+  --cm-tag:        #b05848;
+  --cm-attribute:  #c8a96b;
+  --cm-link:       #7aaccc;
+  --cm-header:     #d4bb88;
+  --cm-hr:         #4a3e2c;
 
-  --search-highlight: rgba(250,210,50,0.2);
-  --search-current:   rgba(245,158,11,0.42);
-  --resizer-bg:       #2a2e42;
-  --resizer-hover:    #3b82f6;
+  --search-highlight: rgba(200,169,107,0.2);
+  --search-current:   rgba(200,169,107,0.42);
+  --resizer-bg:       #4a3e2c;
+  --resizer-hover:    #c8a96b;
 }
 
 [data-theme="light"] {
-  /* Backgrounds */
-  --bg-base:        #ffffff;
-  --bg-surface:     #f6f8fa;
-  --bg-elevated:    #eef0f4;
-  --bg-hover:       #e5e8ee;
-  --bg-active:      #dbeafe;
-  --bg-selection:   #bfdbfe;
+  /* Backgrounds — Sebastian classic: 羊皮紙と書斎 */
+  --bg-base:        #ece6d4;
+  --bg-surface:     #f5f0e5;
+  --bg-elevated:    #faf7f0;
+  --bg-hover:       #e5dcc8;
+  --bg-active:      #d8ceb5;
+  --bg-selection:   #d4c59a;
 
   /* Text */
-  --text-primary:   #111827;
-  --text-secondary: #4b5563;
-  --text-muted:     #9ca3af;
-  --text-accent:    #2563eb;
+  --text-primary:   #2c2010;
+  --text-secondary: #7a6a50;
+  --text-muted:     #a89878;
+  --text-accent:    #a07c30;
 
   /* Borders */
-  --border-color:   #e2e5ea;
-  --border-focus:   #3b82f6;
+  --border-color:   #d5c9a8;
+  --border-focus:   #c9a456;
 
   /* Tabs */
-  --tab-bg:             #eef0f4;
-  --tab-active-bg:      #ffffff;
-  --tab-active-border:  #3b82f6;
-  --tab-unsaved:        #d97706;
+  --tab-bg:             #f0e8d8;
+  --tab-active-bg:      #ece6d4;
+  --tab-active-border:  #c9a456;
+  --tab-unsaved:        #a07c30;
 
   /* Chrome */
-  --toolbar-bg:     #f6f8fa;
-  --statusbar-bg:   #1d4ed8;
-  --statusbar-text: #ffffff;
+  --toolbar-bg:     #f5f0e5;
+  --statusbar-bg:   #1e2e4a;
+  --statusbar-text: #d4c9a8;
 
   /* Scrollbar */
-  --scrollbar-thumb: #d1d5db;
+  --scrollbar-thumb: #c8b890;
   --scrollbar-track: transparent;
 
   /* Modal */
-  --modal-bg:      #ffffff;
-  --modal-overlay: rgba(0,0,0,0.2);
+  --modal-bg:      #faf7f0;
+  --modal-overlay: rgba(20,10,0,0.3);
 
   /* Toasts */
-  --toast-success-bg:     #f0fdf4;
-  --toast-success-border: #22c55e;
-  --toast-warning-bg:     #fffbeb;
-  --toast-warning-border: #f59e0b;
-  --toast-error-bg:       #fef2f2;
-  --toast-error-border:   #ef4444;
-  --toast-info-bg:        #eff6ff;
-  --toast-info-border:    #3b82f6;
+  --toast-success-bg:     rgba(240,255,242,0.98);
+  --toast-success-border: #4e8c5a;
+  --toast-warning-bg:     rgba(255,250,235,0.98);
+  --toast-warning-border: #c9a456;
+  --toast-error-bg:       rgba(255,240,238,0.98);
+  --toast-error-border:   #b05848;
+  --toast-info-bg:        rgba(230,238,255,0.98);
+  --toast-info-border:    #1e2e4a;
 
   /* Preview */
-  --preview-bg:                #ffffff;
-  --preview-text:              #111827;
-  --preview-code-bg:           #f6f8fa;
-  --preview-border:            #e2e5ea;
-  --preview-link:              #2563eb;
-  --preview-blockquote-border: #d1d5db;
-  --preview-blockquote-bg:     #f9fafb;
-  --preview-table-header:      #f3f4f6;
-  --preview-table-border:      #e2e5ea;
-  --preview-table-stripe:      #f9fafb;
+  --preview-bg:                #ece6d4;
+  --preview-text:              #2c2010;
+  --preview-code-bg:           #f5f0e5;
+  --preview-border:            #d5c9a8;
+  --preview-link:              #a07c30;
+  --preview-blockquote-border: #c9a456;
+  --preview-blockquote-bg:     #f5f0e5;
+  --preview-table-header:      #e5dcc8;
+  --preview-table-border:      #d5c9a8;
+  --preview-table-stripe:      #f5f0e5;
 
   /* Editor */
-  --editor-bg:           #ffffff;
-  --editor-text:         #111827;
-  --editor-gutter:       #f6f8fa;
-  --editor-line-active:  #eff6ff;
-  --editor-cursor:       #374151;
+  --editor-bg:           #ece6d4;
+  --editor-text:         #2c2010;
+  --editor-gutter:       #f5f0e5;
+  --editor-line-active:  #f5f0e5;
+  --editor-cursor:       #2c2010;
 
-  /* Syntax — GitHub Light */
-  --cm-keyword:    #cf222e;
-  --cm-string:     #0a3069;
-  --cm-comment:    #6e7781;
-  --cm-number:     #0550ae;
-  --cm-operator:   #0550ae;
-  --cm-tag:        #116329;
-  --cm-attribute:  #953800;
-  --cm-link:       #0969da;
-  --cm-header:     #6639ba;
-  --cm-hr:         #8c8c8c;
+  /* Syntax — ウォームクラシック */
+  --cm-keyword:    #7a3818;
+  --cm-string:     #4a6010;
+  --cm-comment:    #a89878;
+  --cm-number:     #8b3020;
+  --cm-operator:   #6a5800;
+  --cm-tag:        #8a2010;
+  --cm-attribute:  #7a4e10;
+  --cm-link:       #a07c30;
+  --cm-header:     #1e2e4a;
+  --cm-hr:         #c8b890;
 
-  --search-highlight: rgba(250,200,0,0.3);
-  --search-current:   rgba(245,158,11,0.45);
-  --resizer-bg:       #e2e5ea;
-  --resizer-hover:    #3b82f6;
+  --search-highlight: rgba(201,164,86,0.25);
+  --search-current:   rgba(160,124,48,0.45);
+  --resizer-bg:       #d5c9a8;
+  --resizer-hover:    #c9a456;
 }
 
 [data-theme="sepia"] {
-  /* Backgrounds */
-  --bg-base:        #f8f1e3;
-  --bg-surface:     #f0e8d5;
-  --bg-elevated:    #e8dcc5;
-  --bg-hover:       #ddd0b5;
-  --bg-active:      #ccbf9a;
-  --bg-selection:   #d6c9a8;
+  /* Backgrounds — Sebastian sepia: ビクトリア朝のウォールナット */
+  --bg-base:        #cbb98a;
+  --bg-surface:     #d8c898;
+  --bg-elevated:    #e0d0a8;
+  --bg-hover:       #c0aa7a;
+  --bg-active:      #b49868;
+  --bg-selection:   #c8a860;
 
   /* Text */
-  --text-primary:   #2c1f10;
-  --text-secondary: #6b5040;
-  --text-muted:     #9b806a;
-  --text-accent:    #8b4e18;
+  --text-primary:   #1e1008;
+  --text-secondary: #5c3d28;
+  --text-muted:     #8a6848;
+  --text-accent:    #7a5010;
 
   /* Borders */
-  --border-color:   #cfc0a4;
-  --border-focus:   #9b6030;
+  --border-color:   #a8885a;
+  --border-focus:   #a07020;
 
   /* Tabs */
-  --tab-bg:             #e8dcc5;
-  --tab-active-bg:      #f8f1e3;
-  --tab-active-border:  #9b6030;
-  --tab-unsaved:        #c07820;
+  --tab-bg:             #d4c490;
+  --tab-active-bg:      #cbb98a;
+  --tab-active-border:  #a07020;
+  --tab-unsaved:        #d4a850;
 
   /* Chrome */
-  --toolbar-bg:     #f0e8d5;
-  --statusbar-bg:   #7a4820;
-  --statusbar-text: #f8f1e3;
+  --toolbar-bg:     #d8c898;
+  --statusbar-bg:   #2a1a0e;
+  --statusbar-text: #f0e0c0;
 
   /* Scrollbar */
-  --scrollbar-thumb: #c8a878;
+  --scrollbar-thumb: #b09068;
   --scrollbar-track: transparent;
 
   /* Modal */
-  --modal-bg:      #f8f1e3;
-  --modal-overlay: rgba(20,10,0,0.35);
+  --modal-bg:      #d8c898;
+  --modal-overlay: rgba(20,10,0,0.4);
 
   /* Toasts */
-  --toast-success-bg:     #d4edda;
-  --toast-success-border: #28a745;
-  --toast-warning-bg:     #fff3cd;
-  --toast-warning-border: #ffc107;
-  --toast-error-bg:       #f8d7da;
-  --toast-error-border:   #dc3545;
-  --toast-info-bg:        #d1ecf1;
-  --toast-info-border:    #17a2b8;
+  --toast-success-bg:     rgba(215,235,210,0.98);
+  --toast-success-border: #4e8c5a;
+  --toast-warning-bg:     rgba(255,245,215,0.98);
+  --toast-warning-border: #a07020;
+  --toast-error-bg:       rgba(255,225,220,0.98);
+  --toast-error-border:   #8a1808;
+  --toast-info-bg:        rgba(220,232,248,0.98);
+  --toast-info-border:    #2a1a0e;
 
   /* Preview */
-  --preview-bg:                #f8f1e3;
-  --preview-text:              #2c1f10;
-  --preview-code-bg:           #f0e8d5;
-  --preview-border:            #cfc0a4;
-  --preview-link:              #8b4e18;
-  --preview-blockquote-border: #cfc0a4;
-  --preview-blockquote-bg:     #f0e8d5;
-  --preview-table-header:      #e8dcc5;
-  --preview-table-border:      #cfc0a4;
-  --preview-table-stripe:      #f0e8d5;
+  --preview-bg:                #cbb98a;
+  --preview-text:              #1e1008;
+  --preview-code-bg:           #d4c490;
+  --preview-border:            #a8885a;
+  --preview-link:              #7a5010;
+  --preview-blockquote-border: #a07020;
+  --preview-blockquote-bg:     #d8c898;
+  --preview-table-header:      #c0aa7a;
+  --preview-table-border:      #a8885a;
+  --preview-table-stripe:      #d8c898;
 
   /* Editor */
-  --editor-bg:           #f8f1e3;
-  --editor-text:         #2c1f10;
-  --editor-gutter:       #f0e8d5;
-  --editor-line-active:  #f0e8d5;
-  --editor-cursor:       #2c1f10;
+  --editor-bg:           #cbb98a;
+  --editor-text:         #1e1008;
+  --editor-gutter:       #d4c490;
+  --editor-line-active:  #d8c898;
+  --editor-cursor:       #1e1008;
 
-  /* Syntax */
-  --cm-keyword:    #8b4e18;
-  --cm-string:     #5a6e00;
-  --cm-comment:    #8b7850;
-  --cm-number:     #7a3010;
-  --cm-operator:   #6a6800;
-  --cm-tag:        #9a3010;
-  --cm-attribute:  #7a4e10;
-  --cm-link:       #8b4e18;
-  --cm-header:     #7a3818;
-  --cm-hr:         #8b7850;
+  /* Syntax — ヴィクトリアン */
+  --cm-keyword:    #7a5010;
+  --cm-string:     #4a5a08;
+  --cm-comment:    #8a6848;
+  --cm-number:     #7a2010;
+  --cm-operator:   #5a4808;
+  --cm-tag:        #8a1808;
+  --cm-attribute:  #6a3e10;
+  --cm-link:       #7a5010;
+  --cm-header:     #2a1a0e;
+  --cm-hr:         #a8885a;
 
-  --search-highlight: rgba(200,150,0,0.3);
-  --search-current:   rgba(180,110,0,0.5);
-  --resizer-bg:       #cfc0a4;
-  --resizer-hover:    #9b6030;
+  --search-highlight: rgba(160,112,32,0.28);
+  --search-current:   rgba(122,80,16,0.5);
+  --resizer-bg:       #a8885a;
+  --resizer-hover:    #a07020;
 }
 
 [data-theme="vaporwave"] {
