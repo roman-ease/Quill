@@ -26,7 +26,7 @@ const DEFAULT_KEYBINDINGS = {
 };
 
 const DEFAULT_SETTINGS = {
-  theme: 'sepia',
+  theme: 'light',
   defaultTheme: 'last',
   editorFontSize: 14,
   previewFontSize: 15,

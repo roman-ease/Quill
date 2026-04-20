@@ -66,7 +66,7 @@ const Settings = (() => {
   ];
 
   const DEFAULTS = {
-    theme: 'sepia',
+    theme: 'light',
     defaultTheme: 'last',
     editorFontSize: 14,
     previewFontSize: 15,
