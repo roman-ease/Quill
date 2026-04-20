@@ -243,7 +243,7 @@ const Editor = (() => {
       if (m) {
         const level = m[1].length;
         const text = m[2].trim();
-        const anchor = text.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-');
+        const anchor = text.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s+/g, '-');
         headings.push(`${'  '.repeat(level - 1)}- [${text}](#${anchor})`);
       }
     }

@@ -165,7 +165,7 @@ npm run dev
 npm run build
 ```
 
-`dist/Quill Setup 1.0.0.exe` にインストーラーが生成されます。
+`dist/Quill Setup 1.0.1.exe` にインストーラーが生成されます。
 
 ---
 
@@ -180,6 +180,19 @@ npm run build
 | [DOMPurify](https://github.com/cure53/DOMPurify) | 3 | XSS サニタイズ |
 | [Mermaid](https://mermaid.js.org/) | 11 | ダイアグラム描画 |
 | [KaTeX](https://katex.org/) | 0.16 | 数式レンダリング |
+
+---
+
+## バージョン履歴
+
+### v1.0.1 — 2026-04-20
+**バグ修正**
+- 目次自動生成で日本語のみの見出しのアンカーが空になり、リンクが機能しない問題を修正
+  - ID 生成の正規表現を `[^\w\s-]` から `[^\p{L}\p{N}\s-]` (Unicode 対応) に変更
+  - プレビューの見出し ID 生成と目次ジェネレーターで同じロジックを使用するよう統一
+
+### v1.0.0 — 2026-04-20
+初回リリース。
 
 ---
 

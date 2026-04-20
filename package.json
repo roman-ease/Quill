@@ -1,7 +1,7 @@
 {
   "name": "quill",
   "productName": "Quill",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A lightweight Markdown editor and viewer for Windows",
   "main": "src/main/main.js",
   "scripts": {

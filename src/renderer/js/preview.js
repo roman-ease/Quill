@@ -48,7 +48,7 @@ const Preview = (() => {
 
   // 見出し: ID 付与
   renderer.heading = function(text, level, raw) {
-    const id = raw.toLowerCase().replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').trim();
+    const id = raw.toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, '').replace(/\s+/g, '-').trim();
     return `<h${level} id="${id}">${text}</h${level}>\n`;
   };
 
