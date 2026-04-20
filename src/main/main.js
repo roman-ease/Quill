@@ -20,6 +20,7 @@ if (!gotLock) {
 // ─── Globals ─────────────────────────────────────────────────────────────────
 let mainWindow = null;
 const isDev = process.argv.includes('--dev');
+const sessionManager = new SessionManager();
 
 // ─── Second Instance Handler ─────────────────────────────────────────────────
 app.on('second-instance', (event, commandLine, workingDirectory) => {
@@ -60,7 +61,6 @@ app.on('activate', () => {
 
 // ─── Create Window ───────────────────────────────────────────────────────────
 async function createWindow() {
-  const sessionManager = new SessionManager();
   const savedBounds = sessionManager.getWindowBounds();
   const settings = sessionManager.getSettings();
 
@@ -93,7 +93,7 @@ async function createWindow() {
   }
 
   // メニュー構築
-  buildMenu(mainWindow, sessionManager);
+  buildMenu(mainWindow, sessionManager, settings.keybindings);
 
   // IPC ハンドラ登録
   const fileWatcher = new FileWatcher(mainWindow);
@@ -167,5 +167,14 @@ function extractFilePaths(argv) {
 ipcMain.on('confirm-close', () => {
   if (mainWindow) {
     mainWindow.destroy();
+  }
+});
+
+// ショートカット変更後のメニュー再構築
+
+ipcMain.on('rebuild-menu', () => {
+  if (mainWindow && !mainWindow.isDestroyed()) {
+    const settings = sessionManager.getSettings();
+    buildMenu(mainWindow, sessionManager, settings.keybindings);
   }
 });

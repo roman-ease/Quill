@@ -7,6 +7,60 @@
 const Settings = (() => {
   let _settings = {};
   let _onChangeCallbacks = [];
+  let _draftKeybindings = null;
+  let _captureHandler = null;
+
+  const DEFAULT_KEYBINDINGS = {
+    'new-file':      'Ctrl+N',
+    'open-file':     'Ctrl+O',
+    'save':          'Ctrl+S',
+    'save-as':       'Ctrl+Shift+S',
+    'reload':        'Ctrl+R',
+    'close-tab':     'Ctrl+W',
+    'find':          'Ctrl+F',
+    'replace':       'Ctrl+H',
+    'bold':          'Ctrl+B',
+    'italic':        'Ctrl+I',
+    'link':          'Ctrl+K',
+    'insert-table':  'Ctrl+Shift+T',
+    'insert-toc':    'Ctrl+Shift+C',
+    'new-tab':       'Ctrl+T',
+    'next-tab':      'Ctrl+Tab',
+    'prev-tab':      'Ctrl+Shift+Tab',
+    'focus-mode':    'Ctrl+Shift+F',
+    'shortcut-help': 'F1',
+  };
+
+  const SHORTCUT_DEFS = [
+    { group: 'ファイル', actions: [
+      { id: 'new-file',   label: '新規ファイル' },
+      { id: 'open-file',  label: 'ファイルを開く' },
+      { id: 'save',       label: '上書き保存' },
+      { id: 'save-as',    label: '名前を付けて保存' },
+      { id: 'reload',     label: '再読み込み' },
+      { id: 'close-tab',  label: 'タブを閉じる' },
+    ]},
+    { group: 'タブ', actions: [
+      { id: 'new-tab',  label: '新規タブ' },
+      { id: 'next-tab', label: '次のタブ' },
+      { id: 'prev-tab', label: '前のタブ' },
+    ]},
+    { group: '編集', actions: [
+      { id: 'find',         label: '検索' },
+      { id: 'replace',      label: '検索と置換' },
+      { id: 'bold',         label: '太字' },
+      { id: 'italic',       label: '斜体' },
+      { id: 'link',         label: 'リンク挿入' },
+      { id: 'insert-table', label: 'テーブル挿入' },
+      { id: 'insert-toc',   label: '目次を生成' },
+    ]},
+    { group: '表示', actions: [
+      { id: 'focus-mode', label: 'フォーカスモード' },
+    ]},
+    { group: 'ヘルプ', actions: [
+      { id: 'shortcut-help', label: 'ショートカット一覧' },
+    ]},
+  ];
 
   const DEFAULTS = {
     theme: 'sepia',
@@ -37,9 +91,13 @@ const Settings = (() => {
   async function load() {
     try {
       const saved = await ipcRenderer.invoke('load-settings');
-      _settings = { ...DEFAULTS, ...saved };
+      _settings = {
+        ...DEFAULTS,
+        ...saved,
+        keybindings: { ...DEFAULT_KEYBINDINGS, ...((saved && saved.keybindings) || {}) },
+      };
     } catch {
-      _settings = { ...DEFAULTS };
+      _settings = { ...DEFAULTS, keybindings: { ...DEFAULT_KEYBINDINGS } };
     }
     applyTheme(_settings.theme);
     applyEditorVars();
@@ -47,7 +105,11 @@ const Settings = (() => {
   }
 
   async function save(partial) {
-    _settings = { ..._settings, ...partial };
+    _settings = {
+      ..._settings,
+      ...partial,
+      keybindings: { ..._settings.keybindings, ...(partial.keybindings || {}) },
+    };
     await ipcRenderer.invoke('save-settings', _settings);
     applyTheme(_settings.theme);
     applyEditorVars();
@@ -97,11 +159,15 @@ const Settings = (() => {
   // ─── Settings Dialog UI ─────────────────────────────────────────────────
   function openDialog() {
     const dlg = document.getElementById('settings-dialog');
+    _draftKeybindings = { ...(_settings.keybindings || DEFAULT_KEYBINDINGS) };
+    if (_captureHandler) { _captureHandler(); _captureHandler = null; }
     _populateDialog();
+    _populateShortcutTab();
     dlg.classList.remove('hidden');
   }
 
   function closeDialog() {
+    if (_captureHandler) { _captureHandler(); _captureHandler = null; }
     document.getElementById('settings-dialog').classList.add('hidden');
   }
 
@@ -133,6 +199,7 @@ const Settings = (() => {
   }
 
   async function _saveFromDialog() {
+    if (_captureHandler) { _captureHandler(); _captureHandler = null; }
     const newSettings = {
       theme: _val('s-theme'),
       editorFontSize: Number(_val('s-editor-font-size')),
@@ -157,10 +224,12 @@ const Settings = (() => {
       rememberWindowSize: _checked('s-remember-window-size'),
       alwaysOnTop: _checked('s-always-on-top'),
       zoomFactor: Number(_val('s-zoom-factor')),
+      keybindings: { ..._draftKeybindings },
     };
     await save(newSettings);
     await ipcRenderer.invoke('set-always-on-top', newSettings.alwaysOnTop);
     await ipcRenderer.invoke('set-zoom-factor', newSettings.zoomFactor);
+    ipcRenderer.send('rebuild-menu');
     closeDialog();
     Notifications.show('設定を保存しました', 'success');
   }
@@ -181,9 +250,135 @@ const Settings = (() => {
     document.getElementById('settings-cancel-btn').addEventListener('click', closeDialog);
     document.getElementById('settings-close-btn').addEventListener('click', closeDialog);
 
+    document.getElementById('sc-reset-all-btn').addEventListener('click', () => {
+      if (_captureHandler) { _captureHandler(); _captureHandler = null; }
+      _draftKeybindings = { ...DEFAULT_KEYBINDINGS };
+      _populateShortcutTab();
+    });
+
     document.getElementById('settings-dialog').addEventListener('click', (e) => {
       if (e.target === e.currentTarget) closeDialog();
     });
+  }
+
+  // ─── Shortcut Tab ───────────────────────────────────────────────────────
+
+  function _populateShortcutTab() {
+    const tbody = document.getElementById('shortcut-edit-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+
+    for (const { group, actions } of SHORTCUT_DEFS) {
+      const groupRow = document.createElement('tr');
+      groupRow.innerHTML = `<th colspan="3">${group}</th>`;
+      tbody.appendChild(groupRow);
+
+      for (const { id, label } of actions) {
+        const tr = document.createElement('tr');
+        tr.dataset.actionId = id;
+        tbody.appendChild(tr);
+        _renderShortcutRow(tr, id, label);
+      }
+    }
+  }
+
+  function _renderShortcutRow(tr, id, label) {
+    const key = _draftKeybindings[id] || '';
+    const isConflict = _hasConflict(id, key);
+    tr.innerHTML = `
+      <td>${_scEscapeHtml(label)}</td>
+      <td><span class="sc-key-badge${isConflict ? ' sc-conflict' : ''}">${_scEscapeHtml(key)}</span></td>
+      <td class="sc-actions">
+        <button class="sc-edit-btn">編集</button>
+        <button class="sc-reset-btn">リセット</button>
+      </td>`;
+    tr.querySelector('.sc-edit-btn').addEventListener('click', () => _enterCapture(tr, id, label));
+    tr.querySelector('.sc-reset-btn').addEventListener('click', () => _resetKey(id, tr, label));
+  }
+
+  function _hasConflict(id, key) {
+    if (!key) return false;
+    return Object.entries(_draftKeybindings).some(([k, v]) => k !== id && v === key);
+  }
+
+  function _refreshConflictHighlights() {
+    const tbody = document.getElementById('shortcut-edit-tbody');
+    if (!tbody) return;
+    const rows = tbody.querySelectorAll('tr[data-action-id]');
+    const keyToIds = {};
+    rows.forEach(tr => {
+      const id = tr.dataset.actionId;
+      const key = _draftKeybindings[id];
+      if (key) {
+        if (!keyToIds[key]) keyToIds[key] = [];
+        keyToIds[key].push(id);
+      }
+    });
+    rows.forEach(tr => {
+      const badge = tr.querySelector('.sc-key-badge');
+      if (!badge || badge.classList.contains('sc-capture-hint')) return;
+      const key = _draftKeybindings[tr.dataset.actionId];
+      badge.classList.toggle('sc-conflict', !!(key && keyToIds[key] && keyToIds[key].length > 1));
+    });
+  }
+
+  function _buildDisplayKey(e) {
+    const parts = [];
+    if (e.ctrlKey) parts.push('Ctrl');
+    if (e.shiftKey) parts.push('Shift');
+    if (e.altKey) parts.push('Alt');
+    const key = e.key;
+    if (['Control', 'Shift', 'Alt', 'Meta'].includes(key)) return null;
+    const keyMap = {
+      ' ': 'Space', 'ArrowUp': 'Up', 'ArrowDown': 'Down',
+      'ArrowLeft': 'Left', 'ArrowRight': 'Right',
+    };
+    const mapped = keyMap[key] || (key.length === 1 ? key.toUpperCase() : key);
+    parts.push(mapped);
+    return parts.join('+');
+  }
+
+  function _enterCapture(tr, id, label) {
+    if (_captureHandler) { _captureHandler(); _captureHandler = null; }
+
+    const badge = tr.querySelector('.sc-key-badge');
+    const actCell = tr.querySelector('.sc-actions');
+    const prevKey = _draftKeybindings[id] || '';
+
+    badge.textContent = 'キーを押してください...';
+    badge.className = 'sc-key-badge sc-capture-hint';
+    actCell.innerHTML = '<button class="sc-cancel-btn">キャンセル</button>';
+
+    const finish = (key) => {
+      document.removeEventListener('keydown', onKey, true);
+      _captureHandler = null;
+      _draftKeybindings[id] = key;
+      _renderShortcutRow(tr, id, label);
+      _refreshConflictHighlights();
+    };
+
+    const onKey = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      const key = _buildDisplayKey(e);
+      if (!key) return;
+      finish(key);
+    };
+
+    actCell.querySelector('.sc-cancel-btn').addEventListener('click', () => finish(prevKey));
+    document.addEventListener('keydown', onKey, true);
+    _captureHandler = () => finish(prevKey);
+  }
+
+  function _resetKey(id, tr, label) {
+    if (_captureHandler) { _captureHandler(); _captureHandler = null; }
+    _draftKeybindings[id] = DEFAULT_KEYBINDINGS[id] || '';
+    _renderShortcutRow(tr, id, label);
+    _refreshConflictHighlights();
+  }
+
+  function _scEscapeHtml(str) {
+    return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
   // ─── Helpers ────────────────────────────────────────────────────────────
@@ -200,5 +395,5 @@ const Settings = (() => {
     return el.checked;
   }
 
-  return { load, save, get, onChange, openDialog, closeDialog, initDialogEvents };
+  return { load, save, get, onChange, openDialog, closeDialog, initDialogEvents, DEFAULT_KEYBINDINGS, SHORTCUT_DEFS };
 })();

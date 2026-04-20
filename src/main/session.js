@@ -4,6 +4,27 @@ const path = require('path');
 const fs = require('fs');
 const { app } = require('electron');
 
+const DEFAULT_KEYBINDINGS = {
+  'new-file':      'Ctrl+N',
+  'open-file':     'Ctrl+O',
+  'save':          'Ctrl+S',
+  'save-as':       'Ctrl+Shift+S',
+  'reload':        'Ctrl+R',
+  'close-tab':     'Ctrl+W',
+  'find':          'Ctrl+F',
+  'replace':       'Ctrl+H',
+  'bold':          'Ctrl+B',
+  'italic':        'Ctrl+I',
+  'link':          'Ctrl+K',
+  'insert-table':  'Ctrl+Shift+T',
+  'insert-toc':    'Ctrl+Shift+C',
+  'new-tab':       'Ctrl+T',
+  'next-tab':      'Ctrl+Tab',
+  'prev-tab':      'Ctrl+Shift+Tab',
+  'focus-mode':    'Ctrl+Shift+F',
+  'shortcut-help': 'F1',
+};
+
 const DEFAULT_SETTINGS = {
   theme: 'sepia',
   editorFontSize: 14,
@@ -46,15 +67,24 @@ class SessionManager {
     if (this._settings) return this._settings;
     try {
       const raw = fs.readFileSync(this._settingsFile, 'utf8');
-      this._settings = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+      const parsed = JSON.parse(raw);
+      this._settings = {
+        ...DEFAULT_SETTINGS,
+        ...parsed,
+        keybindings: { ...DEFAULT_KEYBINDINGS, ...(parsed.keybindings || {}) },
+      };
     } catch {
-      this._settings = { ...DEFAULT_SETTINGS };
+      this._settings = { ...DEFAULT_SETTINGS, keybindings: { ...DEFAULT_KEYBINDINGS } };
     }
     return this._settings;
   }
 
   saveSettings(settings) {
-    this._settings = { ...DEFAULT_SETTINGS, ...settings };
+    this._settings = {
+      ...DEFAULT_SETTINGS,
+      ...settings,
+      keybindings: { ...DEFAULT_KEYBINDINGS, ...(settings.keybindings || {}) },
+    };
     this._writeJson(this._settingsFile, this._settings);
   }
 
@@ -122,4 +152,4 @@ class SessionManager {
   }
 }
 
-module.exports = { SessionManager };
+module.exports = { SessionManager, DEFAULT_KEYBINDINGS };

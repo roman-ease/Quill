@@ -632,6 +632,77 @@ body.view-preview #preview-pane { border-left: none; }
   color: var(--text-primary);
 }
 
+/* ─── Shortcut Edit Table ────────────────────────────────────────────────── */
+.shortcut-edit-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.shortcut-edit-table th {
+  text-align: left;
+  padding: 10px 8px 4px;
+  color: var(--text-accent);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border-color);
+}
+.shortcut-edit-table td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+.shortcut-edit-table td:last-child { white-space: nowrap; }
+
+.sc-key-badge {
+  display: inline-block;
+  padding: 2px 8px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 12px;
+  color: var(--text-primary);
+  min-width: 80px;
+  text-align: center;
+}
+.sc-key-badge.sc-conflict {
+  border-color: #e05555;
+  color: #e05555;
+  background: rgba(224,85,85,0.1);
+}
+.sc-key-badge.sc-capture-hint {
+  border-color: var(--border-focus);
+  color: var(--text-muted);
+  font-style: italic;
+  animation: sc-pulse 1s ease-in-out infinite alternate;
+}
+@keyframes sc-pulse {
+  from { opacity: 0.6; }
+  to { opacity: 1; }
+}
+.sc-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+}
+.sc-edit-btn, .sc-reset-btn, .sc-cancel-btn {
+  padding: 2px 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 3px;
+  font-size: 12px;
+  background: var(--bg-elevated);
+}
+.sc-edit-btn:hover, .sc-reset-btn:hover, .sc-cancel-btn:hover { background: var(--bg-hover); }
+.sc-reset-all-btn {
+  padding: 4px 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 12px;
+  background: var(--bg-elevated);
+  cursor: pointer;
+}
+.sc-reset-all-btn:hover { background: var(--bg-hover); }
+
 /* ─── Lightbox ───────────────────────────────────────────────────────────── */
 .lightbox {
   position: fixed;

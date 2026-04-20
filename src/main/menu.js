@@ -1,8 +1,17 @@
 'use strict';
 
 const { Menu, app } = require('electron');
+const { DEFAULT_KEYBINDINGS } = require('./session');
 
-function buildMenu(mainWindow, sessionManager) {
+function toAccelerator(key) {
+  if (!key) return undefined;
+  return key.replace(/^Ctrl\+/, 'CmdOrCtrl+');
+}
+
+function buildMenu(mainWindow, sessionManager, keybindings) {
+  const kb = { ...DEFAULT_KEYBINDINGS, ...(keybindings || {}) };
+  const acc = (id) => toAccelerator(kb[id]);
+
   const send = (channel, ...args) => {
     if (mainWindow && !mainWindow.isDestroyed()) {
       mainWindow.webContents.send(channel, ...args);
@@ -16,12 +25,12 @@ function buildMenu(mainWindow, sessionManager) {
       submenu: [
         {
           label: '新規ファイル',
-          accelerator: 'CmdOrCtrl+N',
+          accelerator: acc('new-file'),
           click: () => send('menu-new-file'),
         },
         {
           label: '開く...',
-          accelerator: 'CmdOrCtrl+O',
+          accelerator: acc('open-file'),
           click: () => send('menu-open-file'),
         },
         {
@@ -32,18 +41,18 @@ function buildMenu(mainWindow, sessionManager) {
         { type: 'separator' },
         {
           label: '上書き保存',
-          accelerator: 'CmdOrCtrl+S',
+          accelerator: acc('save'),
           click: () => send('menu-save'),
         },
         {
           label: '名前を付けて保存...',
-          accelerator: 'CmdOrCtrl+Shift+S',
+          accelerator: acc('save-as'),
           click: () => send('menu-save-as'),
         },
         { type: 'separator' },
         {
           label: '再読み込み',
-          accelerator: 'CmdOrCtrl+R',
+          accelerator: acc('reload'),
           click: () => send('menu-reload-file'),
         },
         { type: 'separator' },
@@ -58,7 +67,7 @@ function buildMenu(mainWindow, sessionManager) {
         { type: 'separator' },
         {
           label: 'タブを閉じる',
-          accelerator: 'CmdOrCtrl+W',
+          accelerator: acc('close-tab'),
           click: () => send('menu-close-tab'),
         },
         {
@@ -83,28 +92,28 @@ function buildMenu(mainWindow, sessionManager) {
         { type: 'separator' },
         {
           label: '検索...',
-          accelerator: 'CmdOrCtrl+F',
+          accelerator: acc('find'),
           click: () => send('menu-find'),
         },
         {
           label: '検索と置換...',
-          accelerator: 'CmdOrCtrl+H',
+          accelerator: acc('replace'),
           click: () => send('menu-replace'),
         },
         { type: 'separator' },
         {
           label: '太字',
-          accelerator: 'CmdOrCtrl+B',
+          accelerator: acc('bold'),
           click: () => send('format-bold'),
         },
         {
           label: '斜体',
-          accelerator: 'CmdOrCtrl+I',
+          accelerator: acc('italic'),
           click: () => send('format-italic'),
         },
         {
           label: 'リンク',
-          accelerator: 'CmdOrCtrl+K',
+          accelerator: acc('link'),
           click: () => send('format-link'),
         },
       ],
@@ -116,12 +125,12 @@ function buildMenu(mainWindow, sessionManager) {
       submenu: [
         {
           label: 'テーブル...',
-          accelerator: 'CmdOrCtrl+Shift+T',
+          accelerator: acc('insert-table'),
           click: () => send('menu-insert-table'),
         },
         {
           label: '目次を生成',
-          accelerator: 'CmdOrCtrl+Shift+C',
+          accelerator: acc('insert-toc'),
           click: () => send('menu-insert-toc'),
         },
         {
@@ -151,7 +160,7 @@ function buildMenu(mainWindow, sessionManager) {
         { type: 'separator' },
         {
           label: 'フォーカスモード',
-          accelerator: 'CmdOrCtrl+Shift+F',
+          accelerator: acc('focus-mode'),
           type: 'checkbox',
           id: 'focus-mode',
           click: (menuItem) => send('toggle-focus-mode', menuItem.checked),
@@ -229,17 +238,17 @@ function buildMenu(mainWindow, sessionManager) {
       submenu: [
         {
           label: '新規タブ',
-          accelerator: 'CmdOrCtrl+T',
+          accelerator: acc('new-tab'),
           click: () => send('menu-new-file'),
         },
         {
           label: '次のタブ',
-          accelerator: 'CmdOrCtrl+Tab',
+          accelerator: acc('next-tab'),
           click: () => send('tab-next'),
         },
         {
           label: '前のタブ',
-          accelerator: 'CmdOrCtrl+Shift+Tab',
+          accelerator: acc('prev-tab'),
           click: () => send('tab-prev'),
         },
       ],
@@ -251,7 +260,7 @@ function buildMenu(mainWindow, sessionManager) {
       submenu: [
         {
           label: 'キーボードショートカット',
-          accelerator: 'F1',
+          accelerator: acc('shortcut-help'),
           click: () => send('menu-shortcut-help'),
         },
         { type: 'separator' },

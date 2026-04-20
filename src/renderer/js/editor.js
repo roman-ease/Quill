@@ -11,6 +11,37 @@ const Editor = (() => {
 
   const container = () => document.getElementById('editor-container');
 
+  // ─── キーバインド変換 ────────────────────────────────────────────────────
+  function _toCodeMirrorKey(key) {
+    // 'Ctrl+Shift+S' → 'Ctrl-Shift-S'
+    return key.replace(/\+/g, '-');
+  }
+
+  function _buildExtraKeys(keybindings) {
+    const kb = keybindings || {};
+    const keys = {
+      'Enter': 'newlineAndIndentContinueMarkdownList',
+      'Tab': (cm) => _handleTab(cm, false),
+      'Shift-Tab': (cm) => _handleTab(cm, true),
+      'Escape': () => window.dispatchEvent(new CustomEvent('editor-escape')),
+    };
+    const actionMap = {
+      'bold':          () => formatWrap('**', '**'),
+      'italic':        () => formatWrap('*', '*'),
+      'link':          () => insertLink(),
+      'find':          () => window.dispatchEvent(new CustomEvent('editor-find')),
+      'replace':       () => window.dispatchEvent(new CustomEvent('editor-replace')),
+      'shortcut-help': () => window.dispatchEvent(new CustomEvent('show-shortcut-help')),
+    };
+    for (const [id, fn] of Object.entries(actionMap)) {
+      const key = kb[id];
+      if (key && !key.includes('Tab')) {
+        keys[_toCodeMirrorKey(key)] = fn;
+      }
+    }
+    return keys;
+  }
+
   // ─── インスタンス作成 ────────────────────────────────────────────────────
   function createInstance(tabId) {
     const settings = Settings.get();
@@ -27,17 +58,7 @@ const Editor = (() => {
       tabSize: settings.tabSize || 2,
       indentWithTabs: false,
       styleActiveLine: true,
-      extraKeys: {
-        'Enter': 'newlineAndIndentContinueMarkdownList',
-        'Tab': (cm) => _handleTab(cm, false),
-        'Shift-Tab': (cm) => _handleTab(cm, true),
-        'Ctrl-B': () => formatWrap('**', '**'),
-        'Ctrl-I': () => formatWrap('*', '*'),
-        'Ctrl-K': () => insertLink(),
-        'Ctrl-F': () => window.dispatchEvent(new CustomEvent('editor-find')),
-        'Ctrl-H': () => window.dispatchEvent(new CustomEvent('editor-replace')),
-        'Escape': () => window.dispatchEvent(new CustomEvent('editor-escape')),
-      },
+      extraKeys: _buildExtraKeys(settings.keybindings),
       placeholder: 'Markdown を入力してください...',
     });
 
@@ -400,7 +421,11 @@ const Editor = (() => {
   }
 
   function applySettings(settings) {
-    _instances.forEach((cm) => applyStyleToInstance(cm, settings));
+    const extraKeys = _buildExtraKeys(settings.keybindings);
+    _instances.forEach((cm) => {
+      applyStyleToInstance(cm, settings);
+      cm.setOption('extraKeys', extraKeys);
+    });
   }
 
   function focus() {

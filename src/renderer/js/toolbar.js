@@ -326,6 +326,7 @@ const Toolbar = (() => {
     });
     ipcRenderer.on('tab-next', () => Tabs.nextTab());
     ipcRenderer.on('tab-prev', () => Tabs.prevTab());
+    window.addEventListener('show-shortcut-help', () => _showShortcutHelp());
     ipcRenderer.on('format-bold', () => Editor.formatWrap('**', '**'));
     ipcRenderer.on('format-italic', () => Editor.formatWrap('*', '*'));
     ipcRenderer.on('format-link', () => Editor.insertLink());
@@ -343,6 +344,22 @@ const Toolbar = (() => {
 
   function _showShortcutHelp() {
     const dlg = document.getElementById('shortcut-help-dialog');
+    const tbody = document.getElementById('shortcut-help-tbody');
+    if (tbody) {
+      tbody.innerHTML = '';
+      const kb = Settings.get('keybindings') || {};
+      for (const { group, actions } of Settings.SHORTCUT_DEFS) {
+        const groupRow = document.createElement('tr');
+        groupRow.innerHTML = `<th colspan="2">${group}</th>`;
+        tbody.appendChild(groupRow);
+        for (const { id, label } of actions) {
+          const key = kb[id] || '';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `<td>${label}</td><td><kbd>${key}</kbd></td>`;
+          tbody.appendChild(tr);
+        }
+      }
+    }
     dlg.classList.remove('hidden');
     document.getElementById('shortcut-help-close-btn').onclick = () => dlg.classList.add('hidden');
     dlg.onclick = (e) => { if (e.target === dlg) dlg.classList.add('hidden'); };
