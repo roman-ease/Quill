@@ -27,6 +27,7 @@ const DEFAULT_KEYBINDINGS = {
 
 const DEFAULT_SETTINGS = {
   theme: 'sepia',
+  defaultTheme: 'last',
   editorFontSize: 14,
   previewFontSize: 15,
   editorFont: 'Consolas, "Courier New", monospace',

@@ -64,6 +64,7 @@ const Settings = (() => {
 
   const DEFAULTS = {
     theme: 'sepia',
+    defaultTheme: 'last',
     editorFontSize: 14,
     previewFontSize: 15,
     editorFont: 'Consolas, "Courier New", monospace',
@@ -98,6 +99,10 @@ const Settings = (() => {
       };
     } catch {
       _settings = { ...DEFAULTS, keybindings: { ...DEFAULT_KEYBINDINGS } };
+    }
+    // 起動時テーマを決定: 'last' 以外が指定されていればそのテーマを強制適用
+    if (_settings.defaultTheme && _settings.defaultTheme !== 'last') {
+      _settings.theme = _settings.defaultTheme;
     }
     applyTheme(_settings.theme);
     applyEditorVars();
@@ -174,6 +179,7 @@ const Settings = (() => {
   function _populateDialog() {
     const s = _settings;
     _val('s-theme', s.theme);
+    _val('s-default-theme', s.defaultTheme);
     _val('s-editor-font-size', s.editorFontSize);
     _val('s-preview-font-size', s.previewFontSize);
     _val('s-editor-font', s.editorFont);
@@ -202,6 +208,7 @@ const Settings = (() => {
     if (_captureHandler) { _captureHandler(); _captureHandler = null; }
     const newSettings = {
       theme: _val('s-theme'),
+      defaultTheme: _val('s-default-theme'),
       editorFontSize: Number(_val('s-editor-font-size')),
       previewFontSize: Number(_val('s-preview-font-size')),
       editorFont: _val('s-editor-font'),
