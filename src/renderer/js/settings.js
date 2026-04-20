@@ -42,8 +42,8 @@ const Settings = (() => {
     ]},
     { group: 'タブ', actions: [
       { id: 'new-tab',  label: '新規タブ' },
-      { id: 'next-tab', label: '次のタブ' },
-      { id: 'prev-tab', label: '前のタブ' },
+      { id: 'next-tab', label: '次のタブ', fixed: true },
+      { id: 'prev-tab', label: '前のタブ', fixed: true },
     ]},
     { group: '編集', actions: [
       { id: 'find',         label: '検索' },
@@ -55,7 +55,10 @@ const Settings = (() => {
       { id: 'insert-toc',   label: '目次を生成' },
     ]},
     { group: '表示', actions: [
-      { id: 'focus-mode', label: 'フォーカスモード' },
+      { id: 'focus-mode',  label: 'フォーカスモード' },
+      { id: 'zoom-in',     label: 'ズームイン',      fixed: true, key: 'Ctrl+Plus' },
+      { id: 'zoom-out',    label: 'ズームアウト',    fixed: true, key: 'Ctrl+Minus' },
+      { id: 'zoom-reset',  label: 'ズームリセット',  fixed: true, key: 'Ctrl+0' },
     ]},
     { group: 'ヘルプ', actions: [
       { id: 'shortcut-help', label: 'ショートカット一覧' },
@@ -280,27 +283,37 @@ const Settings = (() => {
       groupRow.innerHTML = `<th colspan="3">${group}</th>`;
       tbody.appendChild(groupRow);
 
-      for (const { id, label } of actions) {
+      for (const def of actions) {
         const tr = document.createElement('tr');
-        tr.dataset.actionId = id;
+        tr.dataset.actionId = def.id;
         tbody.appendChild(tr);
-        _renderShortcutRow(tr, id, label);
+        _renderShortcutRow(tr, def);
       }
     }
   }
 
-  function _renderShortcutRow(tr, id, label) {
+  function _renderShortcutRow(tr, def) {
+    const { id, label, fixed, key: fixedKey } = def;
+    if (fixed) {
+      tr.dataset.fixed = 'true';
+      const displayKey = fixedKey || _draftKeybindings[id] || '';
+      tr.innerHTML = `
+        <td>${_scEscapeHtml(label)}</td>
+        <td><span class="sc-key-badge">${_scEscapeHtml(displayKey)}</span></td>
+        <td><div class="sc-actions"><span class="sc-fixed-label">変更不可</span></div></td>`;
+      return;
+    }
     const key = _draftKeybindings[id] || '';
     const isConflict = _hasConflict(id, key);
     tr.innerHTML = `
       <td>${_scEscapeHtml(label)}</td>
       <td><span class="sc-key-badge${isConflict ? ' sc-conflict' : ''}">${_scEscapeHtml(key)}</span></td>
-      <td class="sc-actions">
+      <td><div class="sc-actions">
         <button class="sc-edit-btn">編集</button>
         <button class="sc-reset-btn">リセット</button>
-      </td>`;
-    tr.querySelector('.sc-edit-btn').addEventListener('click', () => _enterCapture(tr, id, label));
-    tr.querySelector('.sc-reset-btn').addEventListener('click', () => _resetKey(id, tr, label));
+      </div></td>`;
+    tr.querySelector('.sc-edit-btn').addEventListener('click', () => _enterCapture(tr, def));
+    tr.querySelector('.sc-reset-btn').addEventListener('click', () => _resetKey(tr, def));
   }
 
   function _hasConflict(id, key) {
@@ -322,6 +335,7 @@ const Settings = (() => {
       }
     });
     rows.forEach(tr => {
+      if (tr.dataset.fixed) return;
       const badge = tr.querySelector('.sc-key-badge');
       if (!badge || badge.classList.contains('sc-capture-hint')) return;
       const key = _draftKeybindings[tr.dataset.actionId];
@@ -341,11 +355,13 @@ const Settings = (() => {
       'ArrowLeft': 'Left', 'ArrowRight': 'Right',
     };
     const mapped = keyMap[key] || (key.length === 1 ? key.toUpperCase() : key);
+    if (parts.length === 0 && !/^F\d{1,2}$/.test(mapped)) return null;
     parts.push(mapped);
     return parts.join('+');
   }
 
-  function _enterCapture(tr, id, label) {
+  function _enterCapture(tr, def) {
+    const { id } = def;
     if (_captureHandler) { _captureHandler(); _captureHandler = null; }
 
     const badge = tr.querySelector('.sc-key-badge');
@@ -360,7 +376,7 @@ const Settings = (() => {
       document.removeEventListener('keydown', onKey, true);
       _captureHandler = null;
       _draftKeybindings[id] = key;
-      _renderShortcutRow(tr, id, label);
+      _renderShortcutRow(tr, def);
       _refreshConflictHighlights();
     };
 
@@ -377,10 +393,11 @@ const Settings = (() => {
     _captureHandler = () => finish(prevKey);
   }
 
-  function _resetKey(id, tr, label) {
+  function _resetKey(tr, def) {
+    const { id } = def;
     if (_captureHandler) { _captureHandler(); _captureHandler = null; }
     _draftKeybindings[id] = DEFAULT_KEYBINDINGS[id] || '';
-    _renderShortcutRow(tr, id, label);
+    _renderShortcutRow(tr, def);
     _refreshConflictHighlights();
   }
 

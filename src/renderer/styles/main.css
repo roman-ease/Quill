@@ -651,8 +651,10 @@ body.view-preview #preview-pane { border-left: none; }
   padding: 5px 8px;
   border-bottom: 1px solid var(--border-color);
   color: var(--text-secondary);
+  vertical-align: middle;
 }
-.shortcut-edit-table td:last-child { white-space: nowrap; }
+.shortcut-edit-table td:nth-child(2) { width: 140px; text-align: center; }
+.shortcut-edit-table td:last-child { width: 120px; white-space: nowrap; }
 
 .sc-key-badge {
   display: inline-block;
@@ -683,6 +685,7 @@ body.view-preview #preview-pane { border-left: none; }
 .sc-actions {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
   gap: 4px;
 }
 .sc-edit-btn, .sc-reset-btn, .sc-cancel-btn {
@@ -702,6 +705,7 @@ body.view-preview #preview-pane { border-left: none; }
   cursor: pointer;
 }
 .sc-reset-all-btn:hover { background: var(--bg-hover); }
+.sc-fixed-label { font-size: 11px; color: var(--text-muted); font-style: italic; }
 
 /* ─── Lightbox ───────────────────────────────────────────────────────────── */
 .lightbox {

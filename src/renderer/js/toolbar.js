@@ -352,8 +352,8 @@ const Toolbar = (() => {
         const groupRow = document.createElement('tr');
         groupRow.innerHTML = `<th colspan="2">${group}</th>`;
         tbody.appendChild(groupRow);
-        for (const { id, label } of actions) {
-          const key = kb[id] || '';
+        for (const { id, label, fixed, key: fixedKey } of actions) {
+          const key = fixed ? (fixedKey || kb[id] || '') : (kb[id] || '');
           const tr = document.createElement('tr');
           tr.innerHTML = `<td>${label}</td><td><kbd>${key}</kbd></td>`;
           tbody.appendChild(tr);

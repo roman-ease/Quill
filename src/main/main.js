@@ -105,6 +105,7 @@ async function createWindow() {
   // 準備完了後に表示
   mainWindow.once('ready-to-show', () => {
     mainWindow.show();
+    if (savedBounds.isMaximized) mainWindow.maximize();
     if (isDev) {
       mainWindow.webContents.openDevTools({ mode: 'detach' });
     }
@@ -112,12 +113,17 @@ async function createWindow() {
 
   // ウィンドウサイズ保存
   const saveBounds = () => {
-    if (!mainWindow.isMaximized() && !mainWindow.isMinimized()) {
-      sessionManager.saveWindowBounds(mainWindow.getBounds());
-    }
+    if (mainWindow.isMinimized()) return;
+    const isMaximized = mainWindow.isMaximized();
+    const data = isMaximized
+      ? { ...sessionManager.getWindowBounds(), isMaximized: true }
+      : { ...mainWindow.getBounds(), isMaximized: false };
+    sessionManager.saveWindowBounds(data);
   };
   mainWindow.on('resize', saveBounds);
   mainWindow.on('move', saveBounds);
+  mainWindow.on('maximize', saveBounds);
+  mainWindow.on('unmaximize', saveBounds);
 
   // 終了前セッション保存
   let _closeForced = false;

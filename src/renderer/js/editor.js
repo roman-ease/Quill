@@ -418,6 +418,7 @@ const Editor = (() => {
     wrapper.style.height = '100%';
     cm.setOption('lineWrapping', settings.wordWrap !== false);
     cm.setOption('tabSize', settings.tabSize || 2);
+    cm.getInputField().setAttribute('spellcheck', settings.spellCheck ? 'true' : 'false');
   }
 
   function applySettings(settings) {
