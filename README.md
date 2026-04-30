@@ -1,6 +1,6 @@
 # Quill
 
-Windows 向け Markdown エディタ。分割ビューでリアルタイムプレビューを確認しながら執筆できる、Electron 製のデスクトップアプリケーションです。
+Windows / macOS 向け Markdown エディタ。分割ビューでリアルタイムプレビューを確認しながら執筆できる、Electron 製のデスクトップアプリケーションです。
 
 ---
 
@@ -178,7 +178,8 @@ npm run dev
 npm run build
 ```
 
-`dist/Quill Setup 1.1.3.exe` にインストーラーが生成されます。
+- Windows: `dist/Quill Setup X.X.X.exe`
+- macOS: `dist/Quill-X.X.X.dmg`（`npm run build:mac` を macOS 上で実行）
 
 ---
 
@@ -197,6 +198,16 @@ npm run build
 ---
 
 ## バージョン履歴
+
+### v1.2.0 — 2026-04-30
+**新機能**
+- **macOS 対応** — Windows に加え macOS（Intel / Apple Silicon）でも動作するよう対応
+  - macOS 標準のアプリメニュー（About / 設定 `Cmd+,` / 終了 `Cmd+Q`）を追加
+  - Dock アイコン・ウィンドウ挙動を macOS の HIG に準拠
+  - DMG インストーラーを `npm run build:mac` で生成可能（x64 / arm64 ユニバーサル対応）
+  - `.md` / `.markdown` ファイルの関連付けを macOS でも設定
+
+---
 
 ### v1.1.3 — 2026-04-23
 **新機能**
