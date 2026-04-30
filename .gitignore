@@ -3,3 +3,6 @@ dist/
 .claude/
 *.log
 CLAUDE.md
+
+# Project docs (not for version control)
+docs/
