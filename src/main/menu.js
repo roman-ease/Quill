@@ -3,6 +3,8 @@
 const { Menu, app } = require('electron');
 const { DEFAULT_KEYBINDINGS } = require('./session');
 
+const isMac = process.platform === 'darwin';
+
 function toAccelerator(key) {
   if (!key) return undefined;
   return key.replace(/^Ctrl\+/, 'CmdOrCtrl+');
@@ -19,9 +21,27 @@ function buildMenu(mainWindow, sessionManager, keybindings) {
   };
 
   const template = [
-    // ─── ファイル ───────────────────────────────────────────────
+    // ─── macOS アプリメニュー ────────────────────────────────────
+    ...(isMac ? [{
+      label: app.name,
+      submenu: [
+        { label: 'Quill について', click: () => send('menu-about') },
+        { type: 'separator' },
+        { label: '設定...', accelerator: 'Cmd+,', click: () => send('menu-settings') },
+        { type: 'separator' },
+        { role: 'services' },
+        { type: 'separator' },
+        { role: 'hide' },
+        { role: 'hideOthers' },
+        { role: 'unhide' },
+        { type: 'separator' },
+        { label: '終了', accelerator: 'Cmd+Q', click: () => send('app-before-close') },
+      ],
+    }] : []),
+
+    // ─── ファイル ────────────────────────────────────────────────
     {
-      label: 'ファイル(&F)',
+      label: 'ファイル',
       submenu: [
         {
           label: '新規ファイル',
@@ -70,17 +90,21 @@ function buildMenu(mainWindow, sessionManager, keybindings) {
           accelerator: acc('close-tab'),
           click: () => send('menu-close-tab'),
         },
-        {
-          label: '終了',
-          accelerator: 'Alt+F4',
-          click: () => send('app-before-close'),
-        },
+        // macOS では Cmd+Q / アプリメニューで終了するため不要
+        ...(!isMac ? [
+          { type: 'separator' },
+          {
+            label: '終了',
+            accelerator: 'Alt+F4',
+            click: () => send('app-before-close'),
+          },
+        ] : []),
       ],
     },
 
-    // ─── 編集 ───────────────────────────────────────────────────
+    // ─── 編集 ────────────────────────────────────────────────────
     {
-      label: '編集(&E)',
+      label: '編集',
       submenu: [
         { role: 'undo', label: '元に戻す' },
         { role: 'redo', label: 'やり直し' },
@@ -119,9 +143,9 @@ function buildMenu(mainWindow, sessionManager, keybindings) {
       ],
     },
 
-    // ─── 挿入 ───────────────────────────────────────────────────
+    // ─── 挿入 ────────────────────────────────────────────────────
     {
-      label: '挿入(&I)',
+      label: '挿入',
       submenu: [
         {
           label: 'テーブル...',
@@ -154,9 +178,9 @@ function buildMenu(mainWindow, sessionManager, keybindings) {
       ],
     },
 
-    // ─── 表示 ───────────────────────────────────────────────────
+    // ─── 表示 ────────────────────────────────────────────────────
     {
-      label: '表示(&V)',
+      label: '表示',
       submenu: [
         {
           label: '分割ビュー',
@@ -246,9 +270,9 @@ function buildMenu(mainWindow, sessionManager, keybindings) {
       ],
     },
 
-    // ─── タブ ───────────────────────────────────────────────────
+    // ─── タブ ────────────────────────────────────────────────────
     {
-      label: 'タブ(&T)',
+      label: 'タブ',
       submenu: [
         {
           label: '新規タブ',
@@ -270,7 +294,7 @@ function buildMenu(mainWindow, sessionManager, keybindings) {
 
     // ─── ヘルプ ──────────────────────────────────────────────────
     {
-      label: 'ヘルプ(&H)',
+      label: 'ヘルプ',
       submenu: [
         {
           label: 'キーボードショートカット',
@@ -278,15 +302,16 @@ function buildMenu(mainWindow, sessionManager, keybindings) {
           click: () => send('menu-shortcut-help'),
         },
         { type: 'separator' },
+        // macOS では設定は Cmd+, / アプリメニューから開くが、発見性のためここにも残す
         {
           label: '設定...',
           click: () => send('menu-settings'),
         },
-        { type: 'separator' },
-        {
-          label: 'バージョン情報',
-          click: () => send('menu-about'),
-        },
+        // macOS ではバージョン情報はアプリメニューに表示するため除外
+        ...(!isMac ? [
+          { type: 'separator' },
+          { label: 'バージョン情報', click: () => send('menu-about') },
+        ] : []),
       ],
     },
   ];

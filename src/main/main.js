@@ -52,7 +52,8 @@ app.whenReady().then(async () => {
 });
 
 app.on('window-all-closed', () => {
-  app.quit();
+  // macOS はすべてのウィンドウを閉じてもアプリは終了しない（Dock に残る）
+  if (process.platform !== 'darwin') app.quit();
 });
 
 app.on('activate', () => {
@@ -74,7 +75,7 @@ async function createWindow() {
     backgroundColor: '#1e1e1e',
     show: false,
     title: 'Quill',
-    icon: path.join(__dirname, '../../assets/icon.ico'),
+    icon: path.join(__dirname, '../../assets', process.platform === 'darwin' ? 'icon.png' : 'icon.ico'),
     webPreferences: {
       preload: path.join(__dirname, '../preload.js'),
       nodeIntegration: false,
